@@ -3,46 +3,35 @@ version: '3.7'
 services:
   nginx:
     image: nginx:stable-alpine
-    container_name: udi-notify-nginx
+    container_name: udiverso-dispatcher-nginx
     restart: always
     ports:
-      - 8888:80
+      - ${LOCAL_PORT}:80
     volumes:
       - ./src:/var/www/html
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - php
       - mysql
-    networks:
-      - laravel
   
   mysql:
-    image: mysql:5.7
-    container_name: udi-notify-mysql
+    image: mysql:${MYSQL_VERSION}
+    container_name: udiverso-dispatcher-mysql
     restart: always
     environment:
-      MYSQL_DATABASE: homestead
-      MYSQL_USER: homestead
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: admin.root
-    ports:
-      - 33069:3306
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_RANDOM_ROOT_PASSWORD: ${MYSQL_RANDOM_ROOT_PASSWORD}
     volumes:
       - ./mysql:/var/lib/mysql
-    networks: 
-      - laravel
   
   php:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: udi-notify-php
+    container_name: udiverso-dispatcher-php
     volumes:
       - ./src:/var/www/html
     ports:
       - 9000:80
-    networks:
-      - laravel
-
-networks:
-  laravel:
